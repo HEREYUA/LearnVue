@@ -1,18 +1,131 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<div class="content">
+          <el-menu :default-active="$route.path"
+                   class="el-menu-vertical-demo"
+                    unique-opened router :collapse="collapsed"
+                    background-color="#545c64"
+                     text-color="#fff"
+                     :style="{width:asideWidth+'px'}">
+                <template class="el-submenu-font"  v-for="(item,index) in routes"  >
+                  <!-- 拥有子菜单 -->
+                  <el-submenu  :index="index+''" :key="item.name" v-if="item.children&&item.children.length>0">
+                    <!-- <span  class="el-submenu-font-item" slot="title"><i :class="item.icons" class="icon_div"></i><span class="menu_name">{{item.name}}</span></span> -->
+                    <template slot="title" >
+                      <i :class="item.icons"></i>
+                      <span class="menu_name">{{item.name}}</span>
+                    </template>
+                    <el-menu-item v-for="child in routeChildren(item)" :index="child.path" :key="child.path">{{child.name}}</el-menu-item>
+                  </el-submenu>
+                  <!-- 不拥有子菜单 -->
+                  <el-menu-item v-if="!item.children" :key="item.name" :index="item.path">
+                     <i :class="item.icons"></i>
+                    <span slot="title"  class="menu_name">{{item.name}}</span>
+                  </el-menu-item>
+                </template>
+          </el-menu>
+      <el-container class="right_content">
+        <el-header class="header" style="height:10%" >
+         <el-row :span="24">
+            <el-col :span="2">
+              <div class="header_content collapse_icon">
+                <i :class="icon" @click="handleCollapse"></i>
+              </div>
+            </el-col>
+             <el-col :span="18">
+              <div class="header_content breadcrumb">
+                <el-breadcrumb separator="/" class="breadcrumb_inner">
+                <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
+                    {{ item.name }}
+                </el-breadcrumb-item>
+                </el-breadcrumb>
+              </div>
+            </el-col>
+            <el-col :span="4">
+              <div class="grid-content bg-purple">
+              </div>
+            </el-col>
+        </el-row>
+        </el-header>
+        <el-main class="main_content">
+           <router-view/>
+        </el-main>
+      </el-container>
+</div>
 </template>
-
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
   name: 'Home',
+  data () {
+    return {
+      collapsed: false,
+      icon: 'el-icon-s-fold',
+      asideWidth: 220
+    }
+  },
   components: {
-    HelloWorld
+  },
+  computed: {
+    routes: function () {
+      console.log(this.$router.options.routes)
+      return this.$router.options.routes
+    },
+    routeChildren: function (route) {
+      return function (route) {
+        return route.children
+      }
+    }
+  },
+  methods: {
+    handleCollapse () {
+      this.collapsed = !this.collapsed
+      this.icon = this.collapsed ? 'el-icon-s-unfold' : 'el-icon-s-fold'
+      this.asideWidth = this.collapsed ? 64 : 220
+    }
   }
 }
 </script>
+
+<style >
+.content{
+  display: flex;
+  width: 100%;
+  height: 900px;
+}
+.right_content{
+  width: 90%;
+}
+ .header {
+    background-color: #B3C0D1;
+    color: #333;
+  }
+  .header_content{
+      line-height:90px;
+       text-align: left;
+  }
+  .collapse_icon {
+    font-size: 20px;
+  }
+  .breadcrumb{
+    height: 90px;
+  }
+  .breadcrumb_inner{
+    height: 100%;
+     line-height:90px;
+  }
+  .el-breadcrumb__separator{
+    color: #606266;
+  }
+  .el-menu-vertical-demo{
+    text-align: left;
+  }
+  .menu_name{
+    margin-left: 20%;
+  }
+  .main_content {
+    background-color: #E9EEF3;
+    color: #333;
+    text-align: center;
+    line-height: 160px;
+    height: 90%;
+  }
+</style>
