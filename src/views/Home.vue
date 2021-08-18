@@ -41,7 +41,13 @@
               </div>
             </el-col>
             <el-col :span="4">
-              <div class="grid-content bg-purple">
+              <div class="user_info">
+                <el-dropdown trigger="hover">
+                <span class="el-dropdown-link userinfo-inner" ><img :src="sysUserAvatar"/>{{sysUserName}}</span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
               </div>
             </el-col>
         </el-row>
@@ -62,7 +68,9 @@ export default {
     return {
       collapsed: false,
       icon: 'el-icon-s-fold',
-      asideWidth: 220
+      asideWidth: 220,
+      sysUserName: 'admin',
+      sysUserAvatar: 'https://hbimg.huabanimg.com/e340a7bf6edf6e5331bb6f8debb37fc068da65f8df13-wldPd6'
     }
   },
   components: {
@@ -119,6 +127,10 @@ export default {
 }
 .el-breadcrumb__separator{
   color: #606266;
+}
+.user_info{
+  line-height: 90px;
+   text-align: right;
 }
 .el-menu-vertical-demo{
   text-align: left;
