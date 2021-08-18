@@ -6,7 +6,7 @@
                     background-color="#545c64"
                      text-color="#fff"
                      :style="{width:asideWidth+'px'}">
-                <template class="el-submenu-font"  v-for="(item,index) in routes"  >
+                <template class="el-submenu-font"  v-for="(item,index) in routes[0].children"  >
                   <!-- 拥有子菜单 -->
                   <el-submenu  :index="index+''" :key="item.name" v-if="item.children&&item.children.length>0">
                     <!-- <span  class="el-submenu-font-item" slot="title"><i :class="item.icons" class="icon_div"></i><span class="menu_name">{{item.name}}</span></span> -->
@@ -27,12 +27,12 @@
         <el-header class="header" style="height:10%" >
          <el-row :span="24">
             <el-col :span="2">
-              <div class="header_content collapse_icon">
+              <div class=" collapse_icon">
                 <i :class="icon" @click="handleCollapse"></i>
               </div>
             </el-col>
              <el-col :span="18">
-              <div class="header_content breadcrumb">
+              <div class=" breadcrumb">
                 <el-breadcrumb separator="/" class="breadcrumb_inner">
                 <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
                     {{ item.name }}
@@ -47,7 +47,10 @@
         </el-row>
         </el-header>
         <el-main class="main_content">
-           <router-view/>
+          <!-- 路由切换效果 先出后进 -->
+            <transition name="fade" mode="out-in">
+              <router-view></router-view>
+            </transition>
         </el-main>
       </el-container>
 </div>
@@ -67,11 +70,15 @@ export default {
   computed: {
     routes: function () {
       console.log(this.$router.options.routes)
-      return this.$router.options.routes
+      return this.$router.options.routes.filter(function (item) {
+        return !item.hidden
+      })
     },
     routeChildren: function (route) {
       return function (route) {
-        return route.children
+        return route.children.filter(function (child) {
+          return !child.hidden
+        })
       }
     }
   },
@@ -94,38 +101,49 @@ export default {
 .right_content{
   width: 90%;
 }
- .header {
-    background-color: #B3C0D1;
-    color: #333;
-  }
-  .header_content{
-      line-height:90px;
-       text-align: left;
-  }
-  .collapse_icon {
-    font-size: 20px;
-  }
-  .breadcrumb{
-    height: 90px;
-  }
-  .breadcrumb_inner{
-    height: 100%;
-     line-height:90px;
-  }
-  .el-breadcrumb__separator{
-    color: #606266;
-  }
-  .el-menu-vertical-demo{
-    text-align: left;
-  }
-  .menu_name{
-    margin-left: 20%;
-  }
-  .main_content {
-    background-color: #E9EEF3;
-    color: #333;
-    text-align: center;
-    line-height: 160px;
-    height: 90%;
-  }
+.header {
+  background-color: #B3C0D1;
+  color: #333;
+}
+.collapse_icon {
+  font-size: 20px;
+  line-height:90px;
+  text-align: left;
+}
+.breadcrumb{
+  height: 90px;
+}
+.breadcrumb_inner{
+  height: 100%;
+  line-height:90px;
+}
+.el-breadcrumb__separator{
+  color: #606266;
+}
+.el-menu-vertical-demo{
+  text-align: left;
+}
+.menu_name{
+  margin-left: 20%;
+}
+.main_content {
+  background-color: #E9EEF3;
+  color: #333;
+  text-align: center;
+  line-height: 160px;
+  height: 90%;
+}
+  /* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active{
+transition: all .5s;
+}
+.fade-transform-enter {
+opacity: 0;
+transform: translateX(-30px);
+}
+.fade-transform-leave-to {
+ opacity: 0;
+ transform: translateX(30px);
+}
 </style>
